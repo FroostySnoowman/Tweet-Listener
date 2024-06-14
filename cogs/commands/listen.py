@@ -24,7 +24,7 @@ class ListenCog(commands.Cog):
     def cog_load(self):
         self.listenerLoop.start()
 
-    @tasks.loop(seconds = 60)
+    @tasks.loop(seconds=60)
     async def listenerLoop(self):
         async with aiosqlite.connect('database.db') as db:
             guild = self.bot.get_guild(guild_id)
@@ -43,54 +43,59 @@ class ListenCog(commands.Cog):
                 tweet_list = json.loads(tweets)
 
                 if not channel:
-                    await db.execute('DELETE FROM listeners WHERE username=?', (username, ))
+                    await db.execute('DELETE FROM listeners WHERE username=?', (username,))
                     await db.commit()
                     return
 
-                async for tweets in api.user_tweets(user.id, limit=2):
-                    tweets = [tweet async for tweet in api.user_tweets(user.id, limit=2)]
-                    
-                    for tweet in tweets:
-                        if tweet.url in tweet_list:
-                            continue
+                tweets = [tweet async for tweet in api.user_tweets(user.id, limit=2)]
+
+                if tweets:
+                    tweet = tweets[0]
+                    if tweet.url not in tweet_list:
+                        await self.process_tweet(db, tweet, tweet_list, username, channel, on_job_role)
                     else:
-                        cursor = await db.execute('SELECT * FROM keywords')
-                        keywords = await cursor.fetchall()
+                        if len(tweets) > 1:
+                            tweet = tweets[1]
+                            if tweet.url not in tweet_list:
+                                await self.process_tweet(db, tweet, tweet_list, username, channel, on_job_role)
 
-                        for keyword in keywords:
-                            if keyword[1] in tweet.rawContent:
-                                keyword_channel = self.bot.get_channel(keyword[0])
-                                if not keyword_channel:
-                                    await db.execute('DELETE FROM keywords WHERE keyword=?', (keyword[1], ))
-                                    await db.commit()
-                                    continue
+    async def process_tweet(self, db, tweet, tweet_list, username, channel, on_job_role):
+        cursor = await db.execute('SELECT * FROM keywords')
+        keywords = await cursor.fetchall()
 
-                                embed = discord.Embed(title="Listenor", description=f"""
+        for keyword in keywords:
+            if keyword[1] in tweet.rawContent:
+                keyword_channel = self.bot.get_channel(keyword[0])
+                if not keyword_channel:
+                    await db.execute('DELETE FROM keywords WHERE keyword=?', (keyword[1],))
+                    await db.commit()
+                    continue
+
+                embed = discord.Embed(title="Listenor", description=f"""
 [New Keyword Tweet By **{username}**]({tweet.url})
 
 {tweet.rawContent}
 """, color=discord.Color.from_str(embed_color))
-                                embed.set_author(name=username, icon_url=tweet.user.profileImageUrl)
-                                embed.timestamp = datetime.now()
-                                await keyword_channel.send(content=on_job_role.mention, embed=embed)
+                embed.set_author(name=username, icon_url=tweet.user.profileImageUrl)
+                embed.timestamp = datetime.now()
+                await keyword_channel.send(content=on_job_role.mention, embed=embed)
 
-                        tweet_list.append(tweet.url)
+        tweet_list.append(tweet.url)
 
-                        updated_tweets = json.dumps(tweet_list)
+        updated_tweets = json.dumps(tweet_list)
 
-                        await db.execute('UPDATE listeners SET tweets=? WHERE username=?', (updated_tweets, username))
-                        await db.commit()
+        await db.execute('UPDATE listeners SET tweets=? WHERE username=?', (updated_tweets, username))
+        await db.commit()
 
-                        embed = discord.Embed(title="Listenor", description=f"""
+        embed = discord.Embed(title="Listenor", description=f"""
 [New Tweet By **{username}**]({tweet.url})
 
 {tweet.rawContent}
 """, color=discord.Color.from_str(embed_color))
-                        embed.set_author(name=username, icon_url=tweet.user.profileImageUrl)
-                        embed.timestamp = datetime.now()
+        embed.set_author(name=username, icon_url=tweet.user.profileImageUrl)
+        embed.timestamp = datetime.now()
 
-                        await channel.send(content=on_job_role.mention, embed=embed)
-                    break
+        await channel.send(content=on_job_role.mention, embed=embed)
 
     @listenerLoop.before_loop
     async def before_my_task(self):
