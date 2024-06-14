@@ -47,9 +47,12 @@ class ListenCog(commands.Cog):
                     await db.commit()
                     return
 
-                async for tweet in api.user_tweets(user.id, limit=1):
-                    if tweet.url in tweet_list:
-                        break
+                async for tweets in api.user_tweets(user.id, limit=2):
+                    tweets = [tweet async for tweet in api.user_tweets(user.id, limit=2)]
+                    
+                    for tweet in tweets:
+                        if tweet.url in tweet_list:
+                            continue
                     else:
                         cursor = await db.execute('SELECT * FROM keywords')
                         keywords = await cursor.fetchall()
