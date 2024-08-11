@@ -8,7 +8,7 @@ General:
     EMBED_COLOR: "#9C27B0" # hex color code for embeds
 
 Roles:
-    ON_JOB_ROLE_ID: 1234 # ping role id
+    PING_ROLE_ID: 1234 # ping role id
 
 Listening_Categories:
     - 1234 # listening categories

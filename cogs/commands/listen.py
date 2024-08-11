@@ -14,7 +14,7 @@ with open('config.yml', 'r') as file:
 
 guild_id = data["General"]["GUILD_ID"]
 embed_color = data["General"]["EMBED_COLOR"]
-on_job_role_id = data["Roles"]["ON_JOB_ROLE_ID"]
+ping_role_id = data["Roles"]["PING_ROLE_ID"]
 listening_categories = data["Listening_Categories"]
 
 class ListenCog(commands.Cog):
@@ -28,7 +28,7 @@ class ListenCog(commands.Cog):
     async def listenerLoop(self):
         async with aiosqlite.connect('database.db') as db:
             guild = self.bot.get_guild(guild_id)
-            on_job_role = guild.get_role(on_job_role_id)
+            ping_role = guild.get_role(ping_role_id)
 
             cursor = await db.execute('SELECT * FROM listeners')
             listeners = await cursor.fetchall()
@@ -52,14 +52,14 @@ class ListenCog(commands.Cog):
                 if tweets:
                     tweet = tweets[0]
                     if tweet.url not in tweet_list:
-                        await self.process_tweet(db, tweet, tweet_list, username, channel, on_job_role)
+                        await self.process_tweet(db, tweet, tweet_list, username, channel, ping_role)
                     else:
                         if len(tweets) > 1:
                             tweet = tweets[1]
                             if tweet.url not in tweet_list:
-                                await self.process_tweet(db, tweet, tweet_list, username, channel, on_job_role)
+                                await self.process_tweet(db, tweet, tweet_list, username, channel, ping_role)
 
-    async def process_tweet(self, db, tweet, tweet_list, username, channel, on_job_role):
+    async def process_tweet(self, db, tweet, tweet_list, username, channel, ping_role):
         cursor = await db.execute('SELECT * FROM keywords')
         keywords = await cursor.fetchall()
 
@@ -78,7 +78,7 @@ class ListenCog(commands.Cog):
 """, color=discord.Color.from_str(embed_color))
                 embed.set_author(name=username, icon_url=tweet.user.profileImageUrl)
                 embed.timestamp = datetime.now()
-                await keyword_channel.send(content=on_job_role.mention, embed=embed)
+                await keyword_channel.send(content=ping_role.mention, embed=embed)
 
         tweet_list.append(tweet.url)
 
@@ -95,7 +95,7 @@ class ListenCog(commands.Cog):
         embed.set_author(name=username, icon_url=tweet.user.profileImageUrl)
         embed.timestamp = datetime.now()
 
-        await channel.send(content=on_job_role.mention, embed=embed)
+        await channel.send(content=ping_role.mention, embed=embed)
 
     @listenerLoop.before_loop
     async def before_my_task(self):
