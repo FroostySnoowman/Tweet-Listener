@@ -111,7 +111,7 @@ async def delete_accounts():
 
 class TwitterListener(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix=commands.when_mentioned_or('.'), owner_ids=[503641822141349888, 790245191985659925], intents=intents, activity=_activity, status=_status)
+        super().__init__(command_prefix=commands.when_mentioned_or('.'), owner_id=503641822141349888, intents=intents, activity=_activity, status=_status)
 
     async def on_ready(self):
 
