@@ -33,7 +33,7 @@ class KeywordCog(commands.Cog):
                         break
             
             if full_categories == len(keyword_categories):
-                embed = discord.Embed(title="Listenor", description=f"All keyword categories are full, please contact an admin.", color=discord.Color.red())
+                embed = discord.Embed(title="Listener", description=f"All keyword categories are full, please contact an admin.", color=discord.Color.red())
                 await interaction.followup.send(embed=embed)
                 return
 
@@ -42,7 +42,7 @@ class KeywordCog(commands.Cog):
             await db.execute('INSERT INTO keywords VALUES (?,?);', (channel.id, keyword))
             await db.commit()
 
-            embed = discord.Embed(title="Listenor", description=f"Successfully added the keyword listener for **{keyword}**.", color=discord.Color.from_str(embed_color))
+            embed = discord.Embed(title="Listener", description=f"Successfully added the keyword listener for **{keyword}**.", color=discord.Color.from_str(embed_color))
             await interaction.followup.send(embed=embed)
 
 async def setup(bot):

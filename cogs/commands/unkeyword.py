@@ -26,7 +26,7 @@ class UnkeywordCog(commands.Cog):
                 keyword_in_db = await cursor.fetchone()
 
                 if not keyword_in_db:
-                    embed = discord.Embed(title="Listenor", description=f"The keyword **{keyword}** is not in the database.", color=discord.Color.red())
+                    embed = discord.Embed(title="Listener", description=f"The keyword **{keyword}** is not in the database.", color=discord.Color.red())
                     await interaction.followup.send(embed=embed)
                     return
 
@@ -39,7 +39,7 @@ class UnkeywordCog(commands.Cog):
                 channel_id_db = await cursor.fetchone()
 
                 if not channel_id_db:
-                    embed = discord.Embed(title="Listenor", description=f"**{interaction.channel.mention}** is not in the database.", color=discord.Color.red())
+                    embed = discord.Embed(title="Listener", description=f"**{interaction.channel.mention}** is not in the database.", color=discord.Color.red())
                     await interaction.followup.send(embed=embed)
                     return
 
@@ -49,7 +49,7 @@ class UnkeywordCog(commands.Cog):
                 await db.execute('DELETE FROM keywords WHERE channel_id=?', (interaction.channel.id, ))
                 await db.commit()
 
-            embed = discord.Embed(title="Listenor", description=f"The keyword **{keyword}** is no longer being listened to for new tweets.", color=discord.Color.red())
+            embed = discord.Embed(title="Listener", description=f"The keyword **{keyword}** is no longer being listened to for new tweets.", color=discord.Color.red())
             if channel:
                 embed.set_footer(text="Channel deleting in 5 seconds.")
             await interaction.followup.send(embed=embed)

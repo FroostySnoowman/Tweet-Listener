@@ -26,7 +26,7 @@ class UnlistenCog(commands.Cog):
                 username_in_db = await cursor.fetchone()
 
                 if not username_in_db:
-                    embed = discord.Embed(title="Listenor", description=f"**{username}** is not in the database.", color=discord.Color.red())
+                    embed = discord.Embed(title="Listener", description=f"**{username}** is not in the database.", color=discord.Color.red())
                     await interaction.followup.send(embed=embed)
                     return
 
@@ -39,7 +39,7 @@ class UnlistenCog(commands.Cog):
                 channel_id_db = await cursor.fetchone()
 
                 if not channel_id_db:
-                    embed = discord.Embed(title="Listenor", description=f"**{interaction.channel.mention}** is not in the database.", color=discord.Color.red())
+                    embed = discord.Embed(title="Listener", description=f"**{interaction.channel.mention}** is not in the database.", color=discord.Color.red())
                     await interaction.followup.send(embed=embed)
                     return
 
@@ -49,7 +49,7 @@ class UnlistenCog(commands.Cog):
                 await db.execute('DELETE FROM listeners WHERE channel_id=?', (interaction.channel.id, ))
                 await db.commit()
 
-            embed = discord.Embed(title="Listenor", description=f"**{username}** is no longer being listened to for new tweets.", color=discord.Color.red())
+            embed = discord.Embed(title="Listener", description=f"**{username}** is no longer being listened to for new tweets.", color=discord.Color.red())
             if channel:
                 embed.set_footer(text="Channel deleting in 5 seconds.")
             await interaction.followup.send(embed=embed)

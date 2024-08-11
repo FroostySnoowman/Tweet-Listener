@@ -71,7 +71,7 @@ class ListenCog(commands.Cog):
                     await db.commit()
                     continue
 
-                embed = discord.Embed(title="Listenor", description=f"""
+                embed = discord.Embed(title="Listener", description=f"""
 [New Keyword Tweet By **{username}**]({tweet.url})
 
 {tweet.rawContent}
@@ -87,7 +87,7 @@ class ListenCog(commands.Cog):
         await db.execute('UPDATE listeners SET tweets=? WHERE username=?', (updated_tweets, username))
         await db.commit()
 
-        embed = discord.Embed(title="Listenor", description=f"""
+        embed = discord.Embed(title="Listener", description=f"""
 [New Tweet By **{username}**]({tweet.url})
 
 {tweet.rawContent}
@@ -121,7 +121,7 @@ class ListenCog(commands.Cog):
                         break
             
             if full_categories == len(listening_categories):
-                embed = discord.Embed(title="Listenor", description=f"All listening categories are full, please contact an admin.", color=discord.Color.red())
+                embed = discord.Embed(title="Listener", description=f"All listening categories are full, please contact an admin.", color=discord.Color.red())
                 await interaction.followup.send(embed=embed)
                 return
 
@@ -129,13 +129,13 @@ class ListenCog(commands.Cog):
             username_in_db = await cursor.fetchone()
 
             if username_in_db is not None:
-                embed = discord.Embed(title="Listenor", description=f"**{username}** is already in the database.", color=discord.Color.red())
+                embed = discord.Embed(title="Listener", description=f"**{username}** is already in the database.", color=discord.Color.red())
                 await interaction.followup.send(embed=embed)
                 return
             
             user = await api.user_by_login(username)
             if not user:
-                embed = discord.Embed(title="Listenor", description=f"**{username}** is an invalid Twitter username.", color=discord.Color.red())
+                embed = discord.Embed(title="Listener", description=f"**{username}** is an invalid Twitter username.", color=discord.Color.red())
                 await interaction.followup.send(embed=embed)
                 return
 
@@ -146,7 +146,7 @@ class ListenCog(commands.Cog):
             await db.execute('INSERT INTO listeners VALUES (?,?,?);', (username, channel.id, tweet_list))
             await db.commit()
 
-            embed = discord.Embed(title="Listenor", description=f"**{username}** is now being listened for new tweets.", color=discord.Color.from_str(embed_color))
+            embed = discord.Embed(title="Listener", description=f"**{username}** is now being listened for new tweets.", color=discord.Color.from_str(embed_color))
             await interaction.followup.send(embed=embed)
 
 async def setup(bot):
