@@ -4,8 +4,8 @@ import yaml
 import json
 from discord import app_commands
 from discord.ext import commands, tasks
-from twscrape import API
 from datetime import datetime
+from twscrape import API
 
 api = API()
 

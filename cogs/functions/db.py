@@ -14,12 +14,15 @@ embed_color = data["General"]["EMBED_COLOR"]
 async def check_tables():
     await keywords()
     await listeners()
+    await lists()
 
 async def refresh_table(table: str):
     if table == "Keywords":
         await keywords(True)
-    if table == "Listeners":
+    elif table == "Listeners":
         await listeners(True)
+    elif table == "Lists":
+        await lists(True)
 
 async def listeners(delete: bool = False):
     async with aiosqlite.connect('database.db') as db:
@@ -36,6 +39,27 @@ async def listeners(delete: bool = False):
             await db.execute("""
                 CREATE TABLE IF NOT EXISTS listeners (
                     username STRING,
+                    channel_id INTEGER,
+                    tweets JSON
+                )
+            """)
+            await db.commit()
+
+async def lists(delete: bool = False):
+    async with aiosqlite.connect('database.db') as db:
+        if delete:
+            try:
+                await db.execute('DROP TABLE lists')
+                await db.commit()
+            except sqlite3.OperationalError:
+                pass
+
+        try:
+            await db.execute('SELECT * FROM lists')
+        except sqlite3.OperationalError:
+            await db.execute("""
+                CREATE TABLE IF NOT EXISTS lists (
+                    list INTEGER,
                     channel_id INTEGER,
                     tweets JSON
                 )
@@ -69,7 +93,7 @@ class SQLiteCog(commands.Cog):
     @app_commands.command(name="refreshtable", description="Refreshes an SQLite table!")
     @app_commands.default_permissions(administrator=True)
     @app_commands.describe(table="What table should be refreshed?")
-    async def refreshtable(self, interaction: discord.Interaction, table: Literal["Keywords", "Listeners"]) -> None:
+    async def refreshtable(self, interaction: discord.Interaction, table: Literal["Keywords", "Listeners", "Lists"]) -> None:
         await interaction.response.defer(thinking=True, ephemeral=True)
 
         if await self.bot.is_owner(interaction.user):

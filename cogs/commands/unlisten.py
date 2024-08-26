@@ -36,15 +36,15 @@ class UnlistenCog(commands.Cog):
                 await db.commit()
             else:
                 cursor = await db.execute('SELECT * FROM listeners WHERE channel_id=?', (interaction.channel.id,))
-                channel_id_db = await cursor.fetchone()
+                channel_in_db = await cursor.fetchone()
 
-                if not channel_id_db:
+                if not channel_in_db:
                     embed = discord.Embed(title="Listener", description=f"**{interaction.channel.mention}** is not in the database.", color=discord.Color.red())
                     await interaction.followup.send(embed=embed)
                     return
 
-                username = channel_id_db[0]
-                channel = self.bot.get_channel(channel_id_db[1])
+                username = channel_in_db[0]
+                channel = self.bot.get_channel(channel_in_db[1])
 
                 await db.execute('DELETE FROM listeners WHERE channel_id=?', (interaction.channel.id, ))
                 await db.commit()

@@ -13,5 +13,8 @@ Roles:
 Listening_Categories:
     - 1234 # listening categories
 
+List_Categories:
+    - 1234 # list listening categories
+
 Keyword_Categories:
     - 1234 # keyword categories

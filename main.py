@@ -99,6 +99,7 @@ intents = discord.Intents.all()
 
 initial_extensions = [
                       'cogs.commands.keyword',
+                      'cogs.commands.lists',
                       'cogs.commands.listen',
                       'cogs.commands.unkeyword',
                       'cogs.commands.unlisten',
@@ -133,7 +134,7 @@ class TwitterListener(commands.Bot):
                     await api.pool.add_account(username, password, email, email_password)
                 except Exception as e:
                     continue
-        
+
         await api.pool.login_all()
 
         await asyncio.sleep(3)
